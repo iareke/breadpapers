@@ -8,43 +8,67 @@
 
 ## directory structure
 
-- project_name/
-  - apps/
-    - app_name/
-  - setup/
-    - static/
-      - css
-      - js
-      - img
-  - templates/
-    - share/ (other?)
-      - partials/
-  - static/ (opt, collectstatic generated)
-  - media/ (opt, on 1st upload generated)
-
-todo: verify official
+```
+project_name
+├── apps
+│   ├── app_name
+│   │   ├── fixtures
+│   │   └── templates
+│   │        └── app_name
+│   └── default
+│       └── fixtures
+├── media
+├── setup
+│   └── static
+│       ├── css
+│       ├── fonts
+│       ├── img
+│       └── js
+├── static
+└── templates
+    └── partials
+```
 
 ## best practices
 
 - PEPs
-- Use **setup** for the name of the project when creating a new project via `django-admin`
 - Use `requirements.txt` for the Configuration Management of the components
 - Use `.env` (**python-dotenv**) or environment variables for secret information, credentials
+- Use a `urls.py` for each app to define paths
+- Use `setup` as the name of the project
 
 ## tips
 
-`setup/settings.py`
+`tst/settings.py`
 
 ```
 ALLOWED_HOSTS = ['*']
-```
 
-```
-LANGUAGE_CODE = 'en-us'
-```
-
-```
 TIMEZONE = 'America/Sao_Paulo'
+
+STATIC_URL = 'static/'
+
+STATIC_ROOT = BASE_DIR / STATIC_URL
+
+MEDIA_URL = 'media/'
+
+STATIC_ROOT = BASE_DIR / MEDIA_URL
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates/'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 ```
 
 ## env
@@ -68,56 +92,61 @@ typing_extensions==4.7.1
 
 ## work instructions
 
-- Show **python** version
+```
+PROJECT_NAME = 'tst'
+APP_NAME = 'appx'
+```
+
+### Show **python** version
 
 ```
-pi@rpi4:~/Documents/django/tst $ python3 -V
+pi@rpi4:~/tst $ python3 -V
 
 Python 3.9.2
 ```
 
-- Create **venv**
+### Create **venv**
 
 ```
-pi@rpi4:~/Documents/django/tst $ python3 -m venv venv
+pi@rpi4:~/tst $ python3 -m venv venv
 ```
 
-- Activate **venv**
+### Activate **venv**
 
 ```
-pi@rpi4:~/Documents/django/tst $ source venv/bin/activate
+pi@rpi4:~/tst $ source venv/bin/activate
 
-(venv) pi@rpi4:~/Documents/django/tst $
+(venv) pi@rpi4:~/tst $
 ```
 
-- Deactivate **venv**
+### Deactivate **venv**
 
 ```
-(venv) pi@rpi4:~/Documents/django/tst $ deactivate
+(venv) pi@rpi4:~/tst $ deactivate
 
-pi@rpi4:~/Documents/django/tst $
+pi@rpi4:~/tst $
 ```
 
-- Show **venv**'s python version
+### Show **venv**'s python version
 
 ```
-(venv) pi@rpi4:~/Documents/django/tst $ python -V
+(venv) pi@rpi4:~/tst $ python -V
 
 Python 3.9.2
 ```
 
-- Show **pip** version
+### Show **pip** version
 
 ```
-(venv) pi@rpi4:~/Documents/django/tst $ pip --version
+(venv) pi@rpi4:~/tst $ pip --version
 
-pip 20.3.4 from /home/pi/Documents/django/tst/venv/lib/python3.9/site-packages/pip (python 3.9)
+pip 20.3.4 from /home/pi/tst/venv/lib/python3.9/site-packages/pip (python 3.9)
 ```
 
-- Upgrade **pip**
+### Upgrade **pip**
 
 ```
-(venv) pi@rpi4:~/Documents/django/tst $ pip install --upgrade pip
+(venv) pi@rpi4:~/tst $ pip install --upgrade pip
 
 Looking in indexes: https://pypi.org/simple, https://www.piwheels.org/simple
 Requirement already satisfied: pip in ./venv/lib/python3.9/site-packages (20.3.4)
@@ -132,10 +161,10 @@ Installing collected packages: pip
 Successfully installed pip-23.2.1
 ```
 
-- List packages (**pip**)
+### List packages (**pip**)
 
 ```
-(venv) pi@rpi4:~/Documents/django/tst $ pip list
+(venv) pi@rpi4:~/tst $ pip list
 Package       Version
 ------------- -------
 pip           23.2.1
@@ -143,24 +172,24 @@ pkg_resources 0.0.0
 setuptools    44.1.1
 ```
 
-- Uninstall package (**pip**)
+### Uninstall package (**pip**)
 
 ```
-(venv) pi@rpi4:~/Documents/django/tst $ pip uninstall pkg_resources
+(venv) pi@rpi4:~/tst $ pip uninstall pkg_resources
 
 Found existing installation: pkg_resources 0.0.0
 Uninstalling pkg_resources-0.0.0:
   Would remove:
-    /home/pi/Documents/django/tst/venv/lib/python3.9/site-packages/pkg_resources-0.0.0.dist-info/*
-    /home/pi/Documents/django/tst/venv/lib/python3.9/site-packages/pkg_resources/*
+    /home/pi/tst/venv/lib/python3.9/site-packages/pkg_resources-0.0.0.dist-info/*
+    /home/pi/tst/venv/lib/python3.9/site-packages/pkg_resources/*
 Proceed (Y/n)? Y
   Successfully uninstalled pkg_resources-0.0.0
 ```
 
-- Install Django
+### Install Django
 
 ```
-(venv) pi@rpi4:~/Documents/django/tst $ pip install django
+(venv) pi@rpi4:~/tst $ pip install django
 Looking in indexes: https://pypi.org/simple, https://www.piwheels.org/simple
 Collecting django
   Downloading https://www.piwheels.org/simple/django/Django-4.2.3-py3-none-any.whl (8.0 MB)
@@ -176,18 +205,10 @@ Installing collected packages: typing-extensions, sqlparse, asgiref, django
 Successfully installed asgiref-3.7.2 django-4.2.3 sqlparse-0.4.4 typing-extensions-4.7.1
 ```
 
-- Init the project (startproject)
+### Start the server
 
 ```
-(venv) pi@rpi4:~/Documents/django/tst $ django-admin startproject setup .
-```
-
-Hint: using **setup** for the name of the project
-
-- Start the server
-
-```
-(venv) pi@rpi4:/tmp/tst $ python manage.py runserver 0.0.0.0:8000
+(venv) pi@rpi4:~/tst $ python manage.py runserver 0.0.0.0:8000
 Watching for file changes with StatReloader
 Performing system checks...
 
@@ -201,21 +222,257 @@ Quit the server with CONTROL-C.
 
 Note: default starts on 127.0.0.1:8000
 
-Hint: first modify `setup/settings.py` and add the value **'*'** to the **ALLOWED_HOSTS = []** option to allow external connections.
+Hint: first modify `tst/settings.py` and add the value **'*'** to the **ALLOWED_HOSTS = []** option to allow external connections.
 
-`setup/settings.py`
+`tst/settings.py`
 
 ```
 ALLOWED_HOSTS = ['*']
 ```
 
-- Init app (startapp)
+### Declaring the templates directory
+
+`tst/settings.py`
 
 ```
-(venv) pi@rpi4:~/Documents/django/tst $ python manage.py startapp appx
+from pathlib import Path, os
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates/')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+```
+
+### Declaring [static, media] directories
+
+```
+STATIC_URL = 'static/'
+
+STATIC_ROOT = BASE_DIR / STATIC_URL
+
+MEDIA_URL = 'media/'
+
+MEDIA_ROOT = BASE_DIR / MEDIA_URL
+```
+
+### Init the project (startproject)
+
+```
+(venv) pi@rpi4:~/tst $ django-admin startproject tst .
+```
+
+### Init app (startapp)
+
+```
+(venv) pi@rpi4:~/tst/apps $ django-admin startapp appx
 ```
 
 Hint: templates
+
+#### Declaring the app to the project
+
+Include the app config (**AppxConfig**) in the **INSTALLED_APPS**:
+
+`tst/settings.py`
+
+```
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'apps.appx',
+]
+```
+
+Change the name of app config from **appx** to **apps.appx**:
+
+`apps/appx/apps.py`
+
+```
+from django.apps import AppConfig
+
+
+class AppxConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'apps.appx'
+```
+
+#### Declaring app routes (urls)
+
+Include the app urls on **urlpatterns**
+
+`tst/urls.py`
+
+```
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('apps.appx.urls')),
+]
+```
+
+Create the app `urls.py` file and declare the app's **urlpatterns**:
+
+`apps/appx/urls.py`
+
+```
+from django.urls import path
+from apps.appx.views import index
+
+urlpatterns = [
+    path('', index, name='index'),
+]
+```
+
+Hint: path pattern { 'web': singular, 'rest': plural }
+
+#### view index (simple)
+
+Declare the view (**index**) and point to the respective template:
+
+`apps/appx/views.py`
+
+```
+from django.shortcuts import render
+
+def index(request):
+    return render(request, 'appx/index.html')
+```
+
+#### template index (simple)
+
+Create the template file `templates/appx/index.html`:
+
+`templates/appx/index.html`
+
+```
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AppX</title>
+</head>
+
+<body>
+    <h1>AppX</h1>
+</body>
+
+</html>
+```
+
+#### view index (passing data to template)
+
+```
+from django.shortcuts import render
+
+def index(request):
+    content = "Variable content"
+    return render(request, 'appx/index.html', {'content': content})
+```
+
+#### template index (passing data to template)
+
+```
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AppX</title>
+</head>
+
+<body>
+    <h1>{{ content }}</h1>
+</body>
+
+</html>
+```
+
+### Models
+
+Declare models on `models.py` of app
+
+`apps/appx/models.py`
+
+```
+from django.db import models
+
+class ObjX(models.Model):
+    name = models.CharField(max_length=255, null=False, blank=False)
+
+    def __str__(self):
+        return self.name
+```
+
+Hint: from .models (inside a app, refers respective modules)
+
+### PostgreSQL
+
+Note: credentials from variables
+
+```
+from pathlib import Path, os
+from dotenv import load_dotenv
+
+load_dotenv()
+```
+
+```
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': str(os.getenv('PG_DB_NAME')),
+        'USER': str(os.getenv('PG_DB_USER')),
+        'PASSWORD': str(os.getenv('PG_DB_PASSWORD')),
+        'HOST': str(os.getenv('PG_DB_HOST')),
+        'PORT': str(os.getenv('PG_DB_PORT')),
+    }
+}
+```
+
+### Create a new project
+
+  1. create the project base directory and change path to it
+  2. create venv
+  3. activate venv
+  4. upgrade pip (if necessary)
+  5. install django
+  6. create the project via django-admin
+  7. create the directories
+  8. basic configs
+
+### Create a new app
+
+  1. create the app via django-admin on the **apps** directory
+  2. change the app's name in the `apps.py` to add the **apps** path
+  3. create the app's `urls.py`
+  4. change the app's `views.py` to declare a view
+  5. create the app's templates directory
+  6. create the app's template respective to de declared view
+  7. change the project `settings.py to add the app
+  8. change the project `urls.py` to add the app's `urls.py`
+
 
 
 # misc
@@ -223,7 +480,7 @@ Hint: templates
 **venv**
 
 ```
-pi@rpi4:~/Documents/django/tst $ tree
+pi@rpi4:~/tst $ tree
 .
 └── venv
     ├── bin
@@ -251,10 +508,10 @@ pi@rpi4:~/Documents/django/tst $ tree
 **startproject**
 
 ```
-pi@rpi4:~/Documents/django/tst $ tree 
+pi@rpi4:~/tst $ tree 
 .
 ├── manage.py
-├── setup
+├── tst
 │   ├── asgi.py
 │   ├── __init__.py
 │   ├── settings.py
@@ -265,7 +522,7 @@ pi@rpi4:~/Documents/django/tst $ tree
 **startapp**
 
 ```
-(venv) pi@rpi4:~/Documents/django/tst $ tree
+(venv) pi@rpi4:~/tst $ tree
 .
 ├── apps
 │   └── appx
@@ -278,6 +535,4 @@ pi@rpi4:~/Documents/django/tst $ tree
 │       ├── tests.py
 │       └── views.py
 ```
-
-Note: after `mkdir apps ; mv appx apps/`
 
